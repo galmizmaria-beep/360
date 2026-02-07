@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -11,12 +10,15 @@
     <style>
         :root {
             --bg-color: #120c18;
-            --container-bg: #1a1423;
+            --container-bg: transparent; /* Делаем основной контейнер прозрачным */
             --primary-color: #e4229c;
             --text-color: #f0f0f0;
             --text-muted: #a9a9a9;
             --border-color: rgba(228, 34, 156, 0.3);
             --neon-glow: 0 0 5px var(--primary-color), 0 0 15px var(--primary-color), 0 0 25px var(--primary-color);
+        }
+        html {
+            height: 100%;
         }
         body {
             font-family: 'Montserrat', sans-serif;
@@ -24,52 +26,72 @@
             color: var(--text-color);
             display: flex;
             justify-content: center;
-            align-items: flex-start; /* Изменено для длинных страниц */
-            min-height: 100vh;
+            align-items: center;
+            height: 100%;
             margin: 0;
-            padding: 40px 20px;
+            padding: 20px;
             box-sizing: border-box;
         }
         .container {
             background: var(--container-bg);
-            padding: 30px 40px;
-            border-radius: 16px;
             border: 1px solid var(--border-color);
-            box-shadow: 0 0 30px rgba(228, 34, 156, 0.1);
+            box-shadow: 0 0 30px rgba(228, 34, 156, 0.2);
+            border-radius: 16px;
             width: 100%;
-            max-width: 1000px;
+            max-width: 1440px; /* Соотношение 16:9 */
+            aspect-ratio: 16 / 9;
+            padding: 30px 40px;
+            display: flex;
+            flex-direction: column;
         }
         h1 {
             text-align: center;
-            margin-top: 0;
+            margin: 0 0 20px 0;
             color: var(--primary-color);
             font-weight: 700;
             text-shadow: 0 0 10px var(--primary-color);
+            flex-shrink: 0;
         }
-        .main-content { display: flex; flex-wrap: wrap; gap: 40px; margin-top: 30px; }
-        .controls, .preview-wrapper { flex: 1; min-width: 320px; }
+        .main-content {
+            display: flex;
+            gap: 40px;
+            flex-grow: 1;
+            overflow: hidden;
+        }
+        .controls {
+            flex: 2; /* Меньше места */
+            min-width: 280px;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto; /* Скролл для настроек, если не помещаются */
+            padding-right: 15px;
+        }
+        .preview-wrapper {
+            flex: 3; /* Больше места */
+            display: flex;
+            flex-direction: column;
+        }
         h3 { display: block; margin-bottom: 15px; font-weight: 600; color: var(--primary-color); border-bottom: 1px solid var(--border-color); padding-bottom: 10px; }
-        .control-group { margin-bottom: 30px; }
-        p { color: var(--text-muted); font-size: 14px; line-height: 1.5; }
-        input[type="file"] { color: transparent; }
+        .control-group { margin-bottom: 20px; }
+        h4 { color: var(--text-muted); margin: 15px 0 10px; font-size: 1em; }
+        input[type="file"] { color: transparent; width: 100%; }
         input[type="file"]::-webkit-file-upload-button { visibility: hidden; }
-        input[type="file"]::before { content: 'Выберите файл...'; display: inline-block; background: transparent; border: 1px solid var(--border-color); border-radius: 8px; padding: 10px 15px; outline: none; white-space: nowrap; -webkit-user-select: none; cursor: pointer; color: var(--text-color); font-weight: 600; transition: all 0.3s ease; }
+        input[type="file"]::before { content: 'Выберите файл...'; width: 100%; box-sizing: border-box; display: inline-block; background: transparent; border: 1px solid var(--border-color); border-radius: 8px; padding: 10px 15px; outline: none; white-space: nowrap; cursor: pointer; color: var(--text-color); font-weight: 600; transition: all 0.3s ease; }
         input[type="file"]:hover::before { border-color: var(--primary-color); color: var(--primary-color); }
-        input[type="file"]:active::before { background: var(--border-color); }
         .animation-options { display: flex; flex-direction: column; gap: 10px; }
-        .animation-options label { background-color: transparent; border: 1px solid var(--border-color); border-radius: 8px; padding: 12px 15px; cursor: pointer; transition: all 0.2s ease-in-out; position: relative; }
+        .animation-options label { background-color: transparent; border: 1px solid var(--border-color); border-radius: 8px; padding: 10px 15px; cursor: pointer; transition: all 0.2s ease-in-out; position: relative; font-size: 14px; }
         .animation-options input[type="radio"] { display: none; }
         .animation-options label:hover { border-color: var(--primary-color); color: var(--primary-color); }
         .animation-options input[type="radio"]:checked + label { background-color: var(--border-color); border-color: var(--primary-color); color: white; box-shadow: 0 0 10px rgba(228, 34, 156, 0.4); }
-        select { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border-color); font-size: 16px; background-color: var(--container-bg); color: var(--text-color); }
-        #generate-btn { width: 100%; padding: 15px; font-size: 18px; font-weight: bold; color: white; background-color: var(--primary-color); border: none; border-radius: 8px; cursor: pointer; transition: all 0.3s ease; }
+        select { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border-color); font-size: 16px; background-color: var(--bg-color); color: var(--text-color); }
+        #generate-btn { width: 100%; padding: 15px; font-size: 18px; font-weight: bold; color: white; background-color: var(--primary-color); border: none; border-radius: 8px; cursor: pointer; transition: all 0.3s ease; margin-top: auto; }
         #generate-btn:disabled { background-color: #555; color: #888; cursor: not-allowed; box-shadow: none; }
         #generate-btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: var(--neon-glow); }
-        textarea { width: 100%; height: 120px; padding: 15px; border: 1px solid var(--border-color); border-radius: 8px; font-family: 'Courier New', Courier, monospace; resize: vertical; box-sizing: border-box; background-color: var(--bg-color); color: var(--text-color); word-break: break-all; }
+        textarea { width: 100%; height: 100px; padding: 10px; border: 1px solid var(--border-color); border-radius: 8px; font-family: 'Courier New', Courier, monospace; resize: vertical; box-sizing: border-box; background-color: var(--bg-color); color: var(--text-color); word-break: break-all; margin-top: 15px;}
         
         .preview-box {
             width: 100%;
-            padding-top: 56.25%; /* 16:9 */
+            height: 100%;
             position: relative;
             background-color: #000;
             border: 2px dashed var(--border-color);
@@ -80,21 +102,10 @@
             align-items: center;
             color: var(--text-muted);
         }
-        /* Этот контейнер будет использоваться для сложных эффектов */
-        #preview-container {
-            position: absolute;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-        }
-        #preview-image {
-            width: 100%; height: 100%;
-            object-fit: cover;
-            animation: none; 
-            transform: scale(1);
-        }
+        #preview-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
+        #preview-image { width: 100%; height: 100%; object-fit: cover; animation: none; transform: scale(1); }
 
-        /* --- Определения анимаций для предпросмотра --- */
-        /* Базовые */
+        /* Определения анимаций */
         @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
         @keyframes pan-horizontal { from { transform: translateX(-10%); } to { transform: translateX(10%); } }
         @keyframes zoom-in { from { transform: scale(1); } to { transform: scale(1.2); } }
@@ -104,18 +115,11 @@
         @keyframes flicker { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
         @keyframes hue-rotate { from { filter: hue-rotate(0deg); } to { filter: hue-rotate(360deg); } }
         @keyframes blur-focus { 0%, 100% { filter: blur(5px); } 50% { filter: blur(0); } }
-        
-        /* Глитч */
-        @keyframes glitch-anim-1 { 0% { clip-path: inset(45% 0 52% 0); } 25% { clip-path: inset(54% 0 1% 0); } 50% { clip-path: inset(12% 0 58% 0); } 75% { clip-path: inset(78% 0 18% 0); } 100% { clip-path: inset(50% 0 46% 0); } }
-        @keyframes glitch-anim-2 { 0% { clip-path: inset(83% 0 13% 0); } 25% { clip-path: inset(14% 0 49% 0); } 50% { clip-path: inset(12% 0 8% 0); } 75% { clip-path: inset(74% 0 11% 0); } 100% { clip-path: inset(83% 0 13% 0); } }
-        @keyframes glitch-anim-translate { 0% { transform: translate(0); } 20% { transform: translate(-3px, 3px); } 40% { transform: translate(-3px, -3px); } 60% { transform: translate(3px, 3px); } 80% { transform: translate(3px, -3px); } 100% { transform: translate(0); } }
-
-        /* Старый фильм */
-        @keyframes old-film-grain {
-            0%, 100% { transform: translate(0, 0); } 10% { transform: translate(-1%, -1%); } 20% { transform: translate(1%, 1%); } 30% { transform: translate(-2%, 2%); } 40% { transform: translate(2%, -2%); } 50% { transform: translate(-1%, 2%); } 60% { transform: translate(2%, 1%); } 70% { transform: translate(-2%, -1%); } 80% { transform: translate(1%, -2%); } 90% { transform: translate(-1%, 1%); }
-        }
-        @keyframes old-film-scratches { from { background-position: 0 0; } to { background-position: 0 100%; } }
-
+        @keyframes glitch-anim-1 { 0%{clip-path:inset(45% 0 52% 0)}25%{clip-path:inset(54% 0 1% 0)}50%{clip-path:inset(12% 0 58% 0)}75%{clip-path:inset(78% 0 18% 0)}100%{clip-path:inset(50% 0 46% 0)} }
+        @keyframes glitch-anim-2 { 0%{clip-path:inset(83% 0 13% 0)}25%{clip-path:inset(14% 0 49% 0)}50%{clip-path:inset(12% 0 8% 0)}75%{clip-path:inset(74% 0 11% 0)}100%{clip-path:inset(83% 0 13% 0)} }
+        @keyframes glitch-anim-translate { 0%{transform:translate(0)}20%{transform:translate(-3px,3px)}40%{transform:translate(-3px,-3px)}60%{transform:translate(3px,3px)}80%{transform:translate(3px,-3px)}100%{transform:translate(0)} }
+        @keyframes old-film-grain { 0%,100%{transform:translate(0,0)}10%{transform:translate(-1%,-1%)}20%{transform:translate(1%,1%)}30%{transform:translate(-2%,2%)}40%{transform:translate(2%,-2%)}50%{transform:translate(-1%,2%)}60%{transform:translate(2%,1%)}70%{transform:translate(-2%,-1%)}80%{transform:translate(1%,-2%)}90%{transform:translate(-1%,1%)} }
+        @keyframes old-film-scratches { from{background-position:0 0}to{background-position:0 100%} }
     </style>
 </head>
 <body>
@@ -158,11 +162,6 @@
                         <option value="3s">Очень быстро (3с)</option>
                     </select>
                 </div>
-                 <button id="generate-btn" disabled>Сгенерировать код</button>
-                 <div class="output-area">
-                     <h3>4. Скопируйте код</h3>
-                     <textarea id="output-code" readonly placeholder="Здесь появится код для вставки в Genially..."></textarea>
-                 </div>
             </div>
             <div class="preview-wrapper">
                 <h3>Предпросмотр</h3>
@@ -172,12 +171,13 @@
                         <img id="preview-image" src="" alt="">
                     </div>
                 </div>
+                <button id="generate-btn" disabled>Сгенерировать код</button>
+                <textarea id="output-code" readonly placeholder="Здесь появится код для вставки в Genially..."></textarea>
             </div>
         </div>
     </div>
 
     <script>
-        // --- DOM Элементы ---
         const bgUpload = document.getElementById('bg-upload');
         const animationOptions = document.getElementById('animation-options');
         const animationSpeedSelect = document.getElementById('animation-speed');
@@ -189,54 +189,17 @@
 
         let imageDataUrl = '';
 
-        // --- Шаблоны для генерации кода ---
-        const templates = {
-            simple: (img, speed, keyframes, direction = 'normal') => `
-                body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background-color: #000; }
-                img { width: 100%; height: 100%; object-fit: cover; animation: anim ${speed} linear infinite ${direction}; }
-                ${keyframes}
-            `,
-            glitch: (img, speed) => `
-                body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background-color: #000; }
-                .container { position: relative; width: 100%; height: 100%; }
-                .glitch-img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; background-image: url(${img}); background-size: cover; background-position: center; }
-                .container { animation: glitch-anim-translate 0.2s linear infinite alternate; }
-                .glitch-img::before, .glitch-img::after { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: inherit; }
-                .glitch-img::before { animation: glitch-anim-1 1s linear infinite alternate; text-shadow: -2px 0 red; }
-                .glitch-img::after { animation: glitch-anim-2 1.5s linear infinite alternate; text-shadow: 2px 0 blue; }
-                @keyframes glitch-anim-1 { 0% { clip-path: inset(45% 0 52% 0); } 25% { clip-path: inset(54% 0 1% 0); } 50% { clip-path: inset(12% 0 58% 0); } 75% { clip-path: inset(78% 0 18% 0); } 100% { clip-path: inset(50% 0 46% 0); } }
-                @keyframes glitch-anim-2 { 0% { clip-path: inset(83% 0 13% 0); } 25% { clip-path: inset(14% 0 49% 0); } 50% { clip-path: inset(12% 0 8% 0); } 75% { clip-path: inset(74% 0 11% 0); } 100% { clip-path: inset(83% 0 13% 0); } }
-                @keyframes glitch-anim-translate { 0% { transform: translate(0); } 20% { transform: translate(-3px, 3px); } 40% { transform: translate(-3px, -3px); } 60% { transform: translate(3px, 3px); } 80% { transform: translate(3px, -3px); } 100% { transform: translate(0); } }
-            `,
-            'old-film': (img, speed) => `
-                body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background-color: #000; }
-                .container { position: relative; width: 100%; height: 100%; filter: sepia(0.5) contrast(1.1) brightness(0.9); }
-                .film-img { width: 100%; height: 100%; object-fit: cover; }
-                .container::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: repeating-linear-gradient(rgba(0,0,0,0), rgba(0,0,0,0.3) 50%, rgba(0,0,0,0) 100%); opacity: 0.4; animation: old-film-scratches 0.5s linear infinite; }
-                .container::after { content: ''; position: absolute; top: 0; left: 0; width: 200%; height: 200%; background: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px); background-size: 5px 5px; opacity: 0.2; animation: old-film-grain 0.4s steps(1) infinite; }
-                @keyframes old-film-scratches { from { background-position: 0 0; } to { background-position: 0 100%; } }
-                @keyframes old-film-grain { 0%, 100% { transform: translate(0, 0); } 10% { transform: translate(-1%, -1%); } 20% { transform: translate(1%, 1%); } 30% { transform: translate(-2%, 2%); } 40% { transform: translate(2%, -2%); } 50% { transform: translate(-1%, 2%); } 60% { transform: translate(2%, 1%); } 70% { transform: translate(-2%, -1%); } 80% { transform: translate(1%, -2%); } 90% { transform: translate(-1%, 1%); } }
-            `
+        const simpleAnimationsKeyframes = { 'rotate':`@keyframes anim{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}`,'pan-horizontal':`img{transform:scale(1.2)}@keyframes anim{from{transform:scale(1.2) translateX(-10%)}to{transform:scale(1.2) translateX(10%)}}`,'zoom-in':`@keyframes anim{from{transform:scale(1)}to{transform:scale(1.2)}}`,'zoom-out':`img{transform:scale(1.1)}@keyframes anim{from{transform:scale(1.1)}to{transform:scale(1)}}`,'pulse':`@keyframes anim{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}`,'sway':`@keyframes anim{0%,100%{transform:rotate(-2deg)}50%{transform:rotate(2deg)}}`,'flicker':`@keyframes anim{0%,100%{opacity:1}50%{opacity:.7}}`,'hue-rotate':`@keyframes anim{from{filter:hue-rotate(0deg)}to{filter:hue-rotate(360deg)}}`,'blur-focus':`@keyframes anim{0%,100%{filter:blur(5px)}50%{filter:blur(0)}}`};
+
+        const codeGenerators = {
+            none: (img) => `<!DOCTYPE html><html><head><style>body,html{margin:0;padding:0}img{width:100%;height:100%;object-fit:cover}</style></head><body><img src="${img}"></body></html>`,
+            simple: (img, speed, keyframes, direction = 'normal') => `<!DOCTYPE html><html><head><style>body,html{margin:0;padding:0;width:100%;height:100%;overflow:hidden;background-color:#000}img{width:100%;height:100%;object-fit:cover;animation:anim ${speed} linear infinite ${direction}}${keyframes}</style></head><body><img src="${img}"></body></html>`,
+            glitch: (img) => `<!DOCTYPE html><html><head><style>body,html{margin:0;padding:0;width:100%;height:100%;overflow:hidden;background-color:#000}.container{position:relative;width:100%;height:100%;animation:glitch-anim-translate .2s linear infinite alternate}.glitch-img{position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;background-image:url(${img});background-size:cover;background-position:center}.glitch-img::before,.glitch-img::after{content:'';position:absolute;top:0;left:0;width:100%;height:100%;background:inherit}.glitch-img::before{animation:glitch-anim-1 1s linear infinite alternate;text-shadow:-2px 0 red}.glitch-img::after{animation:glitch-anim-2 1.5s linear infinite alternate;text-shadow:2px 0 blue}@keyframes glitch-anim-1{0%{clip-path:inset(45% 0 52% 0)}25%{clip-path:inset(54% 0 1% 0)}50%{clip-path:inset(12% 0 58% 0)}75%{clip-path:inset(78% 0 18% 0)}100%{clip-path:inset(50% 0 46% 0)}}@keyframes glitch-anim-2{0%{clip-path:inset(83% 0 13% 0)}25%{clip-path:inset(14% 0 49% 0)}50%{clip-path:inset(12% 0 8% 0)}75%{clip-path:inset(74% 0 11% 0)}100%{clip-path:inset(83% 0 13% 0)}}@keyframes glitch-anim-translate{0%{transform:translate(0)}20%{transform:translate(-3px,3px)}40%{transform:translate(-3px,-3px)}60%{transform:translate(3px,3px)}80%{transform:translate(3px,-3px)}100%{transform:translate(0)}}</style></head><body><div class="container"><div class="glitch-img"></div></div></body></html>`,
+            'old-film': (img) => `<!DOCTYPE html><html><head><style>body,html{margin:0;padding:0;width:100%;height:100%;overflow:hidden;background-color:#000}.container{position:relative;width:100%;height:100%;filter:sepia(.5) contrast(1.1) brightness(.9)}.film-img{width:100%;height:100%;object-fit:cover}.container::before{content:'';position:absolute;top:0;left:0;width:100%;height:100%;background:repeating-linear-gradient(rgba(0,0,0,0),rgba(0,0,0,.3) 50%,rgba(0,0,0,0) 100%);opacity:.4;animation:old-film-scratches .5s linear infinite}.container::after{content:'';position:absolute;top:0;left:0;width:200%;height:200%;background:radial-gradient(circle,rgba(255,255,255,.1) 1px,transparent 1px);background-size:5px 5px;opacity:.2;animation:old-film-grain .4s steps(1) infinite}@keyframes old-film-scratches{from{background-position:0 0}to{background-position:0 100%}}@keyframes old-film-grain{0%,100%{transform:translate(0,0)}10%{transform:translate(-1%,-1%)}20%{transform:translate(1%,1%)}30%{transform:translate(-2%,2%)}40%{transform:translate(2%,-2%)}50%{transform:translate(-1%,2%)}60%{transform:translate(2%,1%)}70%{transform:translate(-2%,-1%)}80%{transform:translate(1%,-2%)}90%{transform:translate(-1%,1%)}}</style></head><body><div class="container"><img class="film-img" src="${img}"></div></body></html>`,
         };
 
-        const simpleAnimationsKeyframes = {
-            'rotate': `@keyframes anim { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }`,
-            'pan-horizontal': `img { transform: scale(1.2); } @keyframes anim { from { transform: scale(1.2) translateX(-10%); } to { transform: scale(1.2) translateX(10%); } }`,
-            'zoom-in': `@keyframes anim { from { transform: scale(1); } to { transform: scale(1.2); } }`,
-            'zoom-out': `img { transform: scale(1.1); } @keyframes anim { from { transform: scale(1.1); } to { transform: scale(1); } }`,
-            'pulse': `@keyframes anim { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }`,
-            'sway': `@keyframes anim { 0%, 100% { transform: rotate(-2deg); } 50% { transform: rotate(2deg); } }`,
-            'flicker': `@keyframes anim { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }`,
-            'hue-rotate': `@keyframes anim { from { filter: hue-rotate(0deg); } to { filter: hue-rotate(360deg); } }`,
-            'blur-focus': `@keyframes anim { 0%, 100% { filter: blur(5px); } 50% { filter: blur(0); } }`
-        };
-
-        // --- Логика обновления ---
         function updatePreview() {
-            if (!imageDataUrl) {
-                generateBtn.disabled = true;
-                return;
-            }
+            if (!imageDataUrl) { generateBtn.disabled = true; return; }
             
             previewImage.src = imageDataUrl;
             previewImage.style.display = 'block';
@@ -246,32 +209,22 @@
             const animationType = document.querySelector('input[name="animation-type"]:checked').value;
             const speed = animationSpeedSelect.value;
             
-            // Сброс всех предыдущих стилей и классов
-            previewContainer.className = '';
-            previewContainer.innerHTML = '';
+            previewContainer.innerHTML = ''; 
+            previewContainer.style = '';
             previewContainer.appendChild(previewImage);
-            previewImage.style.animation = 'none';
-            previewImage.style.transform = 'scale(1)';
+            previewImage.style = 'width:100%;height:100%;object-fit:cover;';
 
             if (animationType === 'none') return;
             
             if (simpleAnimationsKeyframes[animationType]) {
-                const direction = ['pan-horizontal', 'sway', 'pulse', 'flicker', 'blur-focus'].includes(animationType) ? 'alternate' : 'normal';
+                const direction = ['pan-horizontal','sway','pulse','flicker','blur-focus'].includes(animationType) ? 'alternate' : 'normal';
                 if (animationType === 'pan-horizontal') previewImage.style.transform = 'scale(1.2)';
                 if (animationType === 'zoom-out') previewImage.style.transform = 'scale(1.1)';
                 previewImage.style.animation = `${animationType} ${speed} linear infinite ${direction}`;
             } else if (animationType === 'glitch') {
-                previewContainer.innerHTML = `<div class="glitch-img" style="background-image: url(${imageDataUrl});"></div>`;
-                previewContainer.style.animation = 'glitch-anim-translate 0.2s linear infinite alternate';
-                previewContainer.querySelector('.glitch-img::before').style.animation = 'glitch-anim-1 1s linear infinite alternate';
-                previewContainer.querySelector('.glitch-img::after').style.animation = 'glitch-anim-2 1.5s linear infinite alternate';
+                previewContainer.innerHTML = `<div style="position:relative;width:100%;height:100%;animation:glitch-anim-translate .2s linear infinite alternate"><div style="position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;background-image:url(${imageDataUrl});background-size:cover;background-position:center"></div></div>`;
             } else if (animationType === 'old-film') {
-                previewContainer.style.filter = 'sepia(0.5) contrast(1.1) brightness(0.9)';
-                const before = document.createElement('div');
-                before.style = "content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: repeating-linear-gradient(rgba(0,0,0,0), rgba(0,0,0,0.3) 50%, rgba(0,0,0,0) 100%); opacity: 0.4; animation: old-film-scratches 0.5s linear infinite;";
-                const after = document.createElement('div');
-                after.style = "content: ''; position: absolute; top: 0; left: 0; width: 200%; height: 200%; background: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px); background-size: 5px 5px; opacity: 0.2; animation: old-film-grain 0.4s steps(1) infinite;";
-                previewContainer.append(before, after);
+                previewContainer.innerHTML = `<div style="position:relative;width:100%;height:100%;filter:sepia(.5) contrast(1.1) brightness(.9)"><img src="${imageDataUrl}" style="width:100%;height:100%;object-fit:cover"><div style="content:'';position:absolute;top:0;left:0;width:100%;height:100%;background:repeating-linear-gradient(rgba(0,0,0,0),rgba(0,0,0,.3) 50%,rgba(0,0,0,0) 100%);opacity:.4;animation:old-film-scratches .5s linear infinite"></div><div style="content:'';position:absolute;top:0;left:0;width:200%;height:200%;background:radial-gradient(circle,rgba(255,255,255,.1) 1px,transparent 1px);background-size:5px 5px;opacity:.2;animation:old-film-grain .4s steps(1) infinite"></div></div>`;
             }
         }
 
@@ -281,17 +234,15 @@
                 const reader = new FileReader();
                 reader.onload = (e) => {
                     imageDataUrl = e.target.result;
-                    document.querySelector('input[type="file"]::before').textContent = file.name;
+                    document.querySelector('input[type="file"]::before').textContent = file.name.length > 25 ? file.name.substring(0, 22) + '...' : file.name;
                     updatePreview();
                 };
                 reader.readAsDataURL(file);
             }
         });
 
-        animationOptions.addEventListener('change', updatePreview);
-        animationSpeedSelect.addEventListener('change', updatePreview);
+        [animationOptions, animationSpeedSelect].forEach(el => el.addEventListener('change', updatePreview));
 
-        // --- Генерация кода ---
         generateBtn.addEventListener('click', () => {
             if (!imageDataUrl) return alert('Пожалуйста, сначала загрузите изображение.');
 
@@ -299,10 +250,25 @@
             const speed = animationSpeedSelect.value;
             let srcdocContent = '';
 
-            if (animationType === 'none') {
-                srcdocContent = `<!DOCTYPE html><html><head><style>body, html { margin: 0; padding: 0; } img { width: 100%; height: 100%; object-fit: cover; }</style></head><body><img src='${imageDataUrl}'></body></html>`;
-            } else if (templates[animationType]) {
-                const htmlContent = templates[animationType](imageDataUrl, speed);
-                srcdocContent = `<!DOCTYPE html><html><head><style>${htmlContent}</style></head><body><div class="container"><div class="film-img" style="background-image: url(${imageDataUrl});"></div></div></body></html>`;
+            if (codeGenerators[animationType]) {
+                srcdocContent = codeGenerators[animationType](imageDataUrl);
             } else if (simpleAnimationsKeyframes[animationType]) {
-                const direction = ['pan-horizontal', 'sway', 'pulse', 'flicker',
+                const direction = ['pan-horizontal','sway','pulse','flicker','blur-focus'].includes(animationType) ? 'alternate' : 'normal';
+                srcdocContent = codeGenerators.simple(imageDataUrl, speed, simpleAnimationsKeyframes[animationType], direction);
+            }
+
+            const iframeCode = `<iframe width="100%" height="100%" frameborder="0" srcdoc="${srcdocContent.replace(/"/g, '&quot;')}"></iframe>`;
+            outputCode.value = iframeCode;
+            outputCode.select();
+            
+            try {
+                navigator.clipboard.writeText(iframeCode).then(() => {
+                   alert('Код сгенерирован и скопирован в буфер обмена!');
+                });
+            } catch (err) {
+                alert('Код сгенерирован! Пожалуйста, скопируйте его вручную.');
+            }
+        });
+    </script>
+</body>
+</html>
