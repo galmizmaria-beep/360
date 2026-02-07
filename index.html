@@ -10,7 +10,7 @@
     <style>
         :root {
             --bg-color: #120c18;
-            --container-bg: transparent; /* Делаем основной контейнер прозрачным */
+            --container-bg: #1a1423; /* Возвращаем фон для контейнера */
             --primary-color: #e4229c;
             --text-color: #f0f0f0;
             --text-muted: #a9a9a9;
@@ -32,13 +32,14 @@
             padding: 20px;
             box-sizing: border-box;
         }
+        /* ИЗМЕНЕНИЕ 1: Оптимизация размера редактора под слайд Genially */
         .container {
             background: var(--container-bg);
             border: 1px solid var(--border-color);
             box-shadow: 0 0 30px rgba(228, 34, 156, 0.2);
             border-radius: 16px;
             width: 100%;
-            max-width: 1440px; /* Соотношение 16:9 */
+            max-width: 1200px; /* Стандартный размер слайда Genially */
             aspect-ratio: 16 / 9;
             padding: 30px 40px;
             display: flex;
@@ -58,21 +59,23 @@
             flex-grow: 1;
             overflow: hidden;
         }
+        /* ИЗМЕНЕНИЕ 2: Возвращение исходной компоновки */
         .controls {
-            flex: 2; /* Меньше места */
-            min-width: 280px;
+            flex: 1; /* Меньше места */
+            min-width: 300px;
             display: flex;
             flex-direction: column;
-            overflow-y: auto; /* Скролл для настроек, если не помещаются */
+            overflow-y: auto;
             padding-right: 15px;
         }
         .preview-wrapper {
-            flex: 3; /* Больше места */
+            flex: 2; /* Больше места */
             display: flex;
             flex-direction: column;
         }
         h3 { display: block; margin-bottom: 15px; font-weight: 600; color: var(--primary-color); border-bottom: 1px solid var(--border-color); padding-bottom: 10px; }
         .control-group { margin-bottom: 20px; }
+        .output-area { margin-top: 20px; } /* Возвращаем класс для отступа */
         h4 { color: var(--text-muted); margin: 15px 0 10px; font-size: 1em; }
         input[type="file"] { color: transparent; width: 100%; }
         input[type="file"]::-webkit-file-upload-button { visibility: hidden; }
@@ -84,14 +87,15 @@
         .animation-options label:hover { border-color: var(--primary-color); color: var(--primary-color); }
         .animation-options input[type="radio"]:checked + label { background-color: var(--border-color); border-color: var(--primary-color); color: white; box-shadow: 0 0 10px rgba(228, 34, 156, 0.4); }
         select { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border-color); font-size: 16px; background-color: var(--bg-color); color: var(--text-color); }
-        #generate-btn { width: 100%; padding: 15px; font-size: 18px; font-weight: bold; color: white; background-color: var(--primary-color); border: none; border-radius: 8px; cursor: pointer; transition: all 0.3s ease; margin-top: auto; }
+        #generate-btn { width: 100%; padding: 15px; font-size: 18px; font-weight: bold; color: white; background-color: var(--primary-color); border: none; border-radius: 8px; cursor: pointer; transition: all 0.3s ease; margin-top: 20px; } /* Отступ сверху */
         #generate-btn:disabled { background-color: #555; color: #888; cursor: not-allowed; box-shadow: none; }
         #generate-btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: var(--neon-glow); }
         textarea { width: 100%; height: 100px; padding: 10px; border: 1px solid var(--border-color); border-radius: 8px; font-family: 'Courier New', Courier, monospace; resize: vertical; box-sizing: border-box; background-color: var(--bg-color); color: var(--text-color); word-break: break-all; margin-top: 15px;}
         
+        /* ИЗМЕНЕНИЕ 3: Окно предпросмотра строго 16:9 */
         .preview-box {
             width: 100%;
-            height: 100%;
+            aspect-ratio: 16 / 9; /* Задаем жесткое соотношение сторон */
             position: relative;
             background-color: #000;
             border: 2px dashed var(--border-color);
@@ -101,11 +105,12 @@
             justify-content: center;
             align-items: center;
             color: var(--text-muted);
+            flex-shrink: 0; /* Предотвращаем сжатие по высоте */
         }
         #preview-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
         #preview-image { width: 100%; height: 100%; object-fit: cover; animation: none; transform: scale(1); }
 
-        /* Определения анимаций */
+        /* Определения анимаций (без изменений) */
         @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
         @keyframes pan-horizontal { from { transform: translateX(-10%); } to { transform: translateX(10%); } }
         @keyframes zoom-in { from { transform: scale(1); } to { transform: scale(1.2); } }
@@ -127,6 +132,7 @@
     <div class="container">
         <h1>Advanced Animation Generator</h1>
         <div class="main-content">
+            <!-- ИЗМЕНЕНИЕ 4: Возвращаем плашки в левую колонку -->
             <div class="controls">
                 <div class="control-group">
                     <h3>1. Загрузите фон</h3>
@@ -162,7 +168,12 @@
                         <option value="3s">Очень быстро (3с)</option>
                     </select>
                 </div>
+                 <div class="output-area">
+                     <h3>4. Скопируйте код</h3>
+                     <textarea id="output-code" readonly placeholder="Здесь появится код для вставки в Genially..."></textarea>
+                 </div>
             </div>
+            <!-- Окно предпросмотра и кнопка теперь в правой колонке -->
             <div class="preview-wrapper">
                 <h3>Предпросмотр</h3>
                 <div class="preview-box" id="preview-box">
@@ -172,12 +183,12 @@
                     </div>
                 </div>
                 <button id="generate-btn" disabled>Сгенерировать код</button>
-                <textarea id="output-code" readonly placeholder="Здесь появится код для вставки в Genially..."></textarea>
             </div>
         </div>
     </div>
 
     <script>
+        // JS без изменений, так как он корректно работает с новой структурой
         const bgUpload = document.getElementById('bg-upload');
         const animationOptions = document.getElementById('animation-options');
         const animationSpeedSelect = document.getElementById('animation-speed');
