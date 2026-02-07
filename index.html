@@ -39,11 +39,8 @@
             border-radius: 16px;
             width: 100%;
             max-width: 1200px;
-            /* --- ИЗМЕНЕНИЕ --- */
-            /* Убрано aspect-ratio, задана высота, зависящая от экрана */
             height: 90vh; 
-            max-height: 850px; /* Ограничение для очень больших экранов */
-            /* ------------------ */
+            max-height: 850px;
             padding: 30px 40px;
             display: flex;
             flex-direction: column;
@@ -64,7 +61,7 @@
         }
         .controls {
             flex: 1;
-            min-width: 300px;
+            min-width: 320px;
             display: flex;
             flex-direction: column;
             overflow-y: auto;
@@ -77,7 +74,6 @@
         }
         h3 { display: block; margin-bottom: 15px; font-weight: 600; color: var(--primary-color); border-bottom: 1px solid var(--border-color); padding-bottom: 10px; }
         .control-group { margin-bottom: 20px; }
-        .output-area { margin-top: 20px; }
         h4 { color: var(--text-muted); margin: 15px 0 10px; font-size: 1em; }
         input[type="file"] { color: transparent; width: 100%; }
         input[type="file"]::-webkit-file-upload-button { visibility: hidden; }
@@ -89,10 +85,22 @@
         .animation-options label:hover { border-color: var(--primary-color); color: var(--primary-color); }
         .animation-options input[type="radio"]:checked + label { background-color: var(--border-color); border-color: var(--primary-color); color: white; box-shadow: 0 0 10px rgba(228, 34, 156, 0.4); }
         select { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border-color); font-size: 16px; background-color: var(--bg-color); color: var(--text-color); }
-        #generate-btn { width: 100%; padding: 15px; font-size: 18px; font-weight: bold; color: white; background-color: var(--primary-color); border: none; border-radius: 8px; cursor: pointer; transition: all 0.3s ease; margin-top: auto; /* Прижимаем кнопку к низу */ }
+        
+        #generate-btn { 
+            width: 100%; padding: 15px; font-size: 18px; font-weight: bold; 
+            color: white; background-color: var(--primary-color); border: none; 
+            border-radius: 8px; cursor: pointer; transition: all 0.3s ease; 
+        }
         #generate-btn:disabled { background-color: #555; color: #888; cursor: not-allowed; box-shadow: none; }
         #generate-btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: var(--neon-glow); }
-        textarea { width: 100%; height: 100px; padding: 10px; border: 1px solid var(--border-color); border-radius: 8px; font-family: 'Courier New', Courier, monospace; resize: vertical; box-sizing: border-box; background-color: var(--bg-color); color: var(--text-color); word-break: break-all; margin-top: 15px;}
+        
+        #iframe-output { 
+            width: 100%; height: 90px; padding: 10px; border: 1px solid var(--border-color); 
+            border-radius: 8px; font-family: 'Courier New', Courier, monospace; resize: none; 
+            box-sizing: border-box; background-color: var(--bg-color); color: var(--text-color); 
+            word-break: break-all; margin-top: 15px;
+        }
+
         .preview-box {
             width: 100%;
             aspect-ratio: 16 / 9;
@@ -105,43 +113,25 @@
             justify-content: center;
             align-items: center;
             color: var(--text-muted);
-            margin-bottom: 20px; /* Добавлен отступ от кнопки */
+            margin-bottom: 20px;
         }
         #preview-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
         #preview-image { width: 100%; height: 100%; object-fit: cover; animation: none; transform: scale(1); }
         
         .accordion-header {
-            font-size: 1.17em;
-            margin-bottom: 0;
-            font-weight: 600;
-            color: var(--primary-color);
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 10px;
-            cursor: pointer;
-            list-style: none;
-            position: relative;
-            display: block;
+            font-size: 1.17em; margin-bottom: 0; font-weight: 600; color: var(--primary-color);
+            border-bottom: 1px solid var(--border-color); padding-bottom: 10px; cursor: pointer;
+            list-style: none; position: relative; display: block;
         }
-        .accordion-header::-webkit-details-marker {
-            display: none;
-        }
+        .accordion-header::-webkit-details-marker { display: none; }
         .accordion-header::after {
-            content: '▼';
-            position: absolute;
-            right: 5px;
-            top: 50%;
-            transform: translateY(-50%);
-            font-size: 12px;
-            transition: transform 0.2s ease-in-out;
+            content: '▼'; position: absolute; right: 5px; top: 50%;
+            transform: translateY(-50%); font-size: 12px; transition: transform 0.2s ease-in-out;
         }
-        details[open] > .accordion-header::after {
-            transform: translateY(-50%) rotate(180deg);
-        }
-        .accordion .animation-options {
-            margin-top: 15px;
-        }
+        details[open] > .accordion-header::after { transform: translateY(-50%) rotate(180deg); }
+        .accordion .animation-options { margin-top: 15px; }
 
-        /* Анимации не изменены */
+        /* --- СТАРЫЕ АНИМАЦИИ --- */
         @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
         @keyframes pan-horizontal { from { transform: translateX(-10%); } to { transform: translateX(10%); } }
         @keyframes zoom-in { from { transform: scale(1); } to { transform: scale(1.2); } }
@@ -156,6 +146,14 @@
         @keyframes glitch-anim-translate { 0%{transform:translate(0)}20%{transform:translate(-3px,3px)}40%{transform:translate(-3px,-3px)}60%{transform:translate(3px,3px)}80%{transform:translate(3px,-3px)}100%{transform:translate(0)} }
         @keyframes old-film-grain { 0%,100%{transform:translate(0,0)}10%{transform:translate(-1%,-1%)}20%{transform:translate(1%,1%)}30%{transform:translate(-2%,2%)}40%{transform:translate(2%,-2%)}50%{transform:translate(-1%,2%)}60%{transform:translate(2%,1%)}70%{transform:translate(-2%,-1%)}80%{transform:translate(1%,-2%)}90%{transform:translate(-1%,1%)} }
         @keyframes old-film-scratches { from{background-position:0 0}to{background-position:0 100%} }
+        
+        /* --- НОВЫЕ АНИМАЦИИ --- */
+        @keyframes desaturation-loop { 0%, 100% { filter: grayscale(0); } 50% { filter: grayscale(1); } }
+        @keyframes underwater { 0%, 100% { transform: skewX(-3deg) skewY(1deg); filter: blur(1px) hue-rotate(-10deg); } 50% { transform: skewX(3deg) skewY(-1deg); filter: blur(1px) hue-rotate(10deg); } }
+        @keyframes pan-diagonal { from { transform: translate(-5%, -5%); } to { transform: translate(5%, 5%); } }
+        @keyframes breathing { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.03); } }
+        @keyframes tilt-3d { 0%, 100% { transform: rotateX(-4deg) rotateY(6deg); } 50% { transform: rotateX(4deg) rotateY(-6deg); } }
+        
     </style>
 </head>
 <body>
@@ -169,24 +167,35 @@
                     <input type="file" id="bg-upload" accept="image/*">
                 </div>
                 <div class="control-group">
-                    <details class="accordion" open> <!-- Добавлен атрибут open, чтобы список был открыт по умолчанию -->
+                    <details class="accordion" open>
                         <summary class="accordion-header">2. Эффекты анимации</summary>
                         <div class="animation-options" id="animation-options">
                             <input type="radio" id="anim-none" name="animation-type" value="none" checked><label for="anim-none">Без анимации</label>
-                            <h4>Простые эффекты</h4>
-                            <input type="radio" id="anim-rotate" name="animation-type" value="rotate"><label for="anim-rotate">Полный оборот</label>
+                            
+                            <h4>Движение и Трансформации</h4>
                             <input type="radio" id="anim-pan" name="animation-type" value="pan-horizontal"><label for="anim-pan">Панорама (влево-вправо)</label>
+                            <input type="radio" id="anim-pan-diagonal" name="animation-type" value="pan-diagonal"><label for="anim-pan-diagonal">Панорама по диагонали</label>
                             <input type="radio" id="anim-zoom-in" name="animation-type" value="zoom-in"><label for="anim-zoom-in">Плавное приближение</label>
                             <input type="radio" id="anim-zoom-out" name="animation-type" value="zoom-out"><label for="anim-zoom-out">Плавное отдаление</label>
+                            <input type="radio" id="anim-breathing" name="animation-type" value="breathing"><label for="anim-breathing">Эффект "Дыхание"</label>
                             <input type="radio" id="anim-pulse" name="animation-type" value="pulse"><label for="anim-pulse">Пульсация</label>
                             <input type="radio" id="anim-sway" name="animation-type" value="sway"><label for="anim-sway">Покачивание</label>
-                            <h4>Фильтры</h4>
+                             <input type="radio" id="anim-tilt-3d" name="animation-type" value="tilt-3d"><label for="anim-tilt-3d">Легкий 3D-поворот</label>
+
+                            <h4>Атмосферные фильтры</h4>
                             <input type="radio" id="anim-flicker" name="animation-type" value="flicker"><label for="anim-flicker">Мерцание</label>
                             <input type="radio" id="anim-hue" name="animation-type" value="hue-rotate"><label for="anim-hue">Смена оттенков</label>
+                             <input type="radio" id="anim-desaturation" name="animation-type" value="desaturation-loop"><label for="anim-desaturation">Плавная смена на Ч/Б</label>
                             <input type="radio" id="anim-blur" name="animation-type" value="blur-focus"><label for="anim-blur">Фокус / Размытие</label>
-                            <h4>Сложные эффекты</h4>
+                            <input type="radio" id="anim-underwater" name="animation-type" value="underwater"><label for="anim-underwater">Эффект "Под водой"</label>
+                            
+                            <h4>Стилизованные эффекты</h4>
+                             <input type="radio" id="anim-vignette" name="animation-type" value="pulsing-vignette"><label for="anim-vignette">Пульсирующая виньетка</label>
+                            <input type="radio" id="anim-scan-lines" name="animation-type" value="scan-lines"><label for="anim-scan-lines">Эффект VHS / Scanlines</label>
+                            <input type="radio" id="anim-light-leaks" name="animation-type" value="light-leaks"><label for="anim-light-leaks">Световые блики (Боке)</label>
                             <input type="radio" id="anim-glitch" name="animation-type" value="glitch"><label for="anim-glitch">Глитч (Цифровые помехи)</label>
                             <input type="radio" id="anim-old-film" name="animation-type" value="old-film"><label for="anim-old-film">Старый фильм</label>
+
                         </div>
                     </details>
                 </div>
@@ -200,10 +209,6 @@
                         <option value="3s">Очень быстро (3с)</option>
                     </select>
                 </div>
-                 <div class="output-area">
-                     <h3>4. Скопируйте код</h3>
-                     <textarea id="output-code" readonly placeholder="Здесь появится код для вставки в Genially..."></textarea>
-                 </div>
             </div>
             <div class="preview-wrapper">
                 <h3>Предпросмотр</h3>
@@ -214,30 +219,48 @@
                     </div>
                 </div>
                 <button id="generate-btn" disabled>Сгенерировать код</button>
+                <textarea id="iframe-output" readonly placeholder="Здесь появится ссылка iframe для Genially..."></textarea>
             </div>
         </div>
     </div>
 
     <script>
-        // JS без изменений, все работает как и раньше
         const bgUpload = document.getElementById('bg-upload');
         const animationOptions = document.getElementById('animation-options');
         const animationSpeedSelect = document.getElementById('animation-speed');
         const generateBtn = document.getElementById('generate-btn');
-        const outputCode = document.getElementById('output-code');
+        const iframeOutput = document.getElementById('iframe-output');
         const previewContainer = document.getElementById('preview-container');
         const previewImage = document.getElementById('preview-image');
         const previewBox = document.getElementById('preview-box');
 
         let imageDataUrl = '';
 
-        const simpleAnimationsKeyframes = { 'rotate':`@keyframes anim{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}`,'pan-horizontal':`img{transform:scale(1.2)}@keyframes anim{from{transform:scale(1.2) translateX(-10%)}to{transform:scale(1.2) translateX(10%)}}`,'zoom-in':`@keyframes anim{from{transform:scale(1)}to{transform:scale(1.2)}}`,'zoom-out':`img{transform:scale(1.1)}@keyframes anim{from{transform:scale(1.1)}to{transform:scale(1)}}`,'pulse':`@keyframes anim{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}`,'sway':`@keyframes anim{0%,100%{transform:rotate(-2deg)}50%{transform:rotate(2deg)}}`,'flicker':`@keyframes anim{0%,100%{opacity:1}50%{opacity:.7}}`,'hue-rotate':`@keyframes anim{from{filter:hue-rotate(0deg)}to{filter:hue-rotate(360deg)}}`,'blur-focus':`@keyframes anim{0%,100%{filter:blur(5px)}50%{filter:blur(0)}}`};
+        const simpleAnimationsKeyframes = { 
+            'rotate':`@keyframes anim{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}`,
+            'pan-horizontal':`img{transform:scale(1.2)}@keyframes anim{from{transform:scale(1.2) translateX(-10%)}to{transform:scale(1.2) translateX(10%)}}`,
+            'pan-diagonal':`img{transform:scale(1.2)}@keyframes anim{from{transform:scale(1.2) translate(-5%, -5%)}to{transform:scale(1.2) translate(5%, 5%)}}`,
+            'zoom-in':`@keyframes anim{from{transform:scale(1)}to{transform:scale(1.2)}}`,
+            'zoom-out':`img{transform:scale(1.1)}@keyframes anim{from{transform:scale(1.1)}to{transform:scale(1)}}`,
+            'pulse':`@keyframes anim{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}`,
+            'breathing':`@keyframes anim{0%,100%{transform:scale(1)}50%{transform:scale(1.03)}}`,
+            'sway':`@keyframes anim{0%,100%{transform:rotate(-2deg)}50%{transform:rotate(2deg)}}`,
+            'tilt-3d':`body{perspective:1000px}@keyframes anim{0%,100%{transform:rotateX(-4deg) rotateY(6deg)}50%{transform:rotateX(4deg) rotateY(-6deg)}}`,
+            'flicker':`@keyframes anim{0%,100%{opacity:1}50%{opacity:.7}}`,
+            'hue-rotate':`@keyframes anim{from{filter:hue-rotate(0deg)}to{filter:hue-rotate(360deg)}}`,
+            'blur-focus':`@keyframes anim{0%,100%{filter:blur(5px)}50%{filter:blur(0)}}`,
+            'desaturation-loop':`@keyframes anim{0%,100%{filter:grayscale(0)}50%{filter:grayscale(1)}}`,
+            'underwater':`@keyframes anim{0%,100%{transform:skewX(-3deg) skewY(1deg);filter:blur(1px) hue-rotate(-10deg)}50%{transform:skewX(3deg) skewY(-1deg);filter:blur(1px) hue-rotate(10deg)}}`
+        };
 
         const codeGenerators = {
-            none: (img) => `<!DOCTYPE html><html><head><style>body,html{margin:0;padding:0}img{width:100%;height:100%;object-fit:cover}</style></head><body><img src="${img}"></body></html>`,
+            none: (img) => `<!DOCTYPE html><html><head><style>body,html{margin:0;padding:0;width:100%;height:100%;overflow:hidden}img{width:100%;height:100%;object-fit:cover}</style></head><body><img src="${img}"></body></html>`,
             simple: (img, speed, keyframes, direction = 'normal') => `<!DOCTYPE html><html><head><style>body,html{margin:0;padding:0;width:100%;height:100%;overflow:hidden;background-color:#000}img{width:100%;height:100%;object-fit:cover;animation:anim ${speed} linear infinite ${direction}}${keyframes}</style></head><body><img src="${img}"></body></html>`,
             glitch: (img) => `<!DOCTYPE html><html><head><style>body,html{margin:0;padding:0;width:100%;height:100%;overflow:hidden;background-color:#000}.container{position:relative;width:100%;height:100%;animation:glitch-anim-translate .2s linear infinite alternate}.glitch-img{position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;background-image:url(${img});background-size:cover;background-position:center}.glitch-img::before,.glitch-img::after{content:'';position:absolute;top:0;left:0;width:100%;height:100%;background:inherit}.glitch-img::before{animation:glitch-anim-1 1s linear infinite alternate;text-shadow:-2px 0 red}.glitch-img::after{animation:glitch-anim-2 1.5s linear infinite alternate;text-shadow:2px 0 blue}@keyframes glitch-anim-1{0%{clip-path:inset(45% 0 52% 0)}25%{clip-path:inset(54% 0 1% 0)}50%{clip-path:inset(12% 0 58% 0)}75%{clip-path:inset(78% 0 18% 0)}100%{clip-path:inset(50% 0 46% 0)}}@keyframes glitch-anim-2{0%{clip-path:inset(83% 0 13% 0)}25%{clip-path:inset(14% 0 49% 0)}50%{clip-path:inset(12% 0 8% 0)}75%{clip-path:inset(74% 0 11% 0)}100%{clip-path:inset(83% 0 13% 0)}}@keyframes glitch-anim-translate{0%{transform:translate(0)}20%{transform:translate(-3px,3px)}40%{transform:translate(-3px,-3px)}60%{transform:translate(3px,3px)}80%{transform:translate(3px,-3px)}100%{transform:translate(0)}}</style></head><body><div class="container"><div class="glitch-img"></div></div></body></html>`,
             'old-film': (img) => `<!DOCTYPE html><html><head><style>body,html{margin:0;padding:0;width:100%;height:100%;overflow:hidden;background-color:#000}.container{position:relative;width:100%;height:100%;filter:sepia(.5) contrast(1.1) brightness(.9)}.film-img{width:100%;height:100%;object-fit:cover}.container::before{content:'';position:absolute;top:0;left:0;width:100%;height:100%;background:repeating-linear-gradient(rgba(0,0,0,0),rgba(0,0,0,.3) 50%,rgba(0,0,0,0) 100%);opacity:.4;animation:old-film-scratches .5s linear infinite}.container::after{content:'';position:absolute;top:0;left:0;width:200%;height:200%;background:radial-gradient(circle,rgba(255,255,255,.1) 1px,transparent 1px);background-size:5px 5px;opacity:.2;animation:old-film-grain .4s steps(1) infinite}@keyframes old-film-scratches{from{background-position:0 0}to{background-position:0 100%}}@keyframes old-film-grain{0%,100%{transform:translate(0,0)}10%{transform:translate(-1%,-1%)}20%{transform:translate(1%,1%)}30%{transform:translate(-2%,2%)}40%{transform:translate(2%,-2%)}50%{transform:translate(-1%,2%)}60%{transform:translate(2%,1%)}70%{transform:translate(-2%,-1%)}80%{transform:translate(1%,-2%)}90%{transform:translate(-1%,1%)}}</style></head><body><div class="container"><img class="film-img" src="${img}"></div></body></html>`,
+            'pulsing-vignette': (img, speed) => `<!DOCTYPE html><html><head><style>body,html{margin:0;padding:0;width:100%;height:100%;overflow:hidden;background-color:#000}.container{position:relative;width:100%;height:100%}.container img{width:100%;height:100%;object-fit:cover}.container::after{content:'';position:absolute;top:0;left:0;width:100%;height:100%;box-shadow:inset 0 0 80px 40px #000;animation:vignette-anim ${speed} ease-in-out infinite alternate}@keyframes vignette-anim{from{opacity:0.5}to{opacity:1}}</style></head><body><div class="container"><img src="${img}"></div></body></html>`,
+            'scan-lines': (img, speed) => `<!DOCTYPE html><html><head><style>body,html{margin:0;padding:0;width:100%;height:100%;overflow:hidden;background-color:#000}.container{position:relative;width:100%;height:100%;animation:vhs-jitter .2s steps(1) infinite}.container img{width:100%;height:100%;object-fit:cover}.container::before{content:'';position:absolute;top:0;left:0;width:100%;height:100%;background:linear-gradient(rgba(255,255,255,.05) 50%, transparent 50%);background-size:100% 4px;opacity:0.5;animation:scan-anim .5s linear infinite}@keyframes scan-anim{from{background-position-y:0}to{background-position-y:4px}}@keyframes vhs-jitter{0%,100%{transform:translate(0,0)}25%{transform:translate(-1px,1px)}50%{transform:translate(1px,-1px)}75%{transform:translate(-1px,-1px)}}</style></head><body><div class="container"><img src="${img}"></div></body></html>`,
+            'light-leaks': (img, speed) => `<!DOCTYPE html><html><head><style>body,html{margin:0;padding:0;width:100%;height:100%;overflow:hidden;background-color:#000}.container{position:relative;width:100%;height:100%}.container img{width:100%;height:100%;object-fit:cover}.container::before,.container::after{content:'';position:absolute;top:-50%;left:-50%;width:200%;height:200%;background:radial-gradient(circle at center, rgba(228,34,156,0.4) 0%, transparent 40%);opacity:0; animation:leak-anim ${speed} ease-in-out infinite}.container::after{background:radial-gradient(circle at center, rgba(34,156,228,0.4) 0%, transparent 40%);animation-delay:calc(${speed}/-2)}@keyframes leak-anim{0%{opacity:0;transform:translate(30%, -30%) scale(0.5)}50%{opacity:0.3;transform:translate(-30%, 30%) scale(1)}100%{opacity:0;transform:translate(30%, -30%) scale(0.5)}}</style></head><body><div class="container"><img src="${img}"></div></body></html>`,
         };
 
         function updatePreview() {
@@ -251,22 +274,30 @@
             const animationType = document.querySelector('input[name="animation-type"]:checked').value;
             const speed = animationSpeedSelect.value;
             
-            previewContainer.innerHTML = ''; 
+            previewContainer.innerHTML = '';
             previewContainer.style = '';
             previewContainer.appendChild(previewImage);
-            previewImage.style = 'width:100%;height:100%;object-fit:cover;';
+            previewImage.style = 'width:100%;height:100%;object-fit:cover;animation:none;transform:none;filter:none;';
+            previewBox.style = '';
 
             if (animationType === 'none') return;
             
             if (simpleAnimationsKeyframes[animationType]) {
-                const direction = ['pan-horizontal','sway','pulse','flicker','blur-focus'].includes(animationType) ? 'alternate' : 'normal';
-                if (animationType === 'pan-horizontal') previewImage.style.transform = 'scale(1.2)';
+                const directionCandidates = ['pan-horizontal', 'pan-diagonal', 'sway', 'pulse', 'breathing', 'flicker', 'blur-focus', 'desaturation-loop', 'underwater', 'tilt-3d'];
+                const direction = directionCandidates.includes(animationType) ? 'alternate' : 'normal';
+                
+                if (animationType.includes('pan')) previewImage.style.transform = 'scale(1.2)';
                 if (animationType === 'zoom-out') previewImage.style.transform = 'scale(1.1)';
-                previewImage.style.animation = `${animationType} ${speed} linear infinite ${direction}`;
-            } else if (animationType === 'glitch') {
-                previewContainer.innerHTML = `<div style="position:relative;width:100%;height:100%;animation:glitch-anim-translate .2s linear infinite alternate"><div style="position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;background-image:url(${imageDataUrl});background-size:cover;background-position:center"></div></div>`;
-            } else if (animationType === 'old-film') {
-                previewContainer.innerHTML = `<div style="position:relative;width:100%;height:100%;filter:sepia(.5) contrast(1.1) brightness(.9)"><img src="${imageDataUrl}" style="width:100%;height:100%;object-fit:cover"><div style="content:'';position:absolute;top:0;left:0;width:100%;height:100%;background:repeating-linear-gradient(rgba(0,0,0,0),rgba(0,0,0,.3) 50%,rgba(0,0,0,0) 100%);opacity:.4;animation:old-film-scratches .5s linear infinite"></div><div style="content:'';position:absolute;top:0;left:0;width:200%;height:200%;background:radial-gradient(circle,rgba(255,255,255,.1) 1px,transparent 1px);background-size:5px 5px;opacity:.2;animation:old-film-grain .4s steps(1) infinite"></div></div>`;
+                if (animationType === 'tilt-3d') previewBox.style.perspective = '1000px';
+
+                previewImage.style.animationName = animationType;
+                previewImage.style.animationDuration = speed;
+                previewImage.style.animationTimingFunction = 'linear';
+                previewImage.style.animationIterationCount = 'infinite';
+                previewImage.style.animationDirection = direction;
+
+            } else {
+                 previewContainer.innerHTML = codeGenerators[animationType](imageDataUrl, speed).match(/<body[^>]*>([\s\S]*)<\/body>/i)[1];
             }
         }
 
@@ -286,29 +317,32 @@
         [animationOptions, animationSpeedSelect].forEach(el => el.addEventListener('change', updatePreview));
 
         generateBtn.addEventListener('click', () => {
-            if (!imageDataUrl) return alert('Пожалуйста, сначала загрузите изображение.');
+            if (!imageDataUrl) return;
 
             const animationType = document.querySelector('input[name="animation-type"]:checked').value;
             const speed = animationSpeedSelect.value;
             let srcdocContent = '';
 
             if (codeGenerators[animationType]) {
-                srcdocContent = codeGenerators[animationType](imageDataUrl);
+                srcdocContent = codeGenerators[animationType](imageDataUrl, speed);
             } else if (simpleAnimationsKeyframes[animationType]) {
-                const direction = ['pan-horizontal','sway','pulse','flicker','blur-focus'].includes(animationType) ? 'alternate' : 'normal';
+                const directionCandidates = ['pan-horizontal', 'pan-diagonal', 'sway', 'pulse', 'breathing', 'flicker', 'blur-focus', 'desaturation-loop', 'underwater', 'tilt-3d'];
+                const direction = directionCandidates.includes(animationType) ? 'alternate' : 'normal';
                 srcdocContent = codeGenerators.simple(imageDataUrl, speed, simpleAnimationsKeyframes[animationType], direction);
             }
 
             const iframeCode = `<iframe width="100%" height="100%" frameborder="0" srcdoc="${srcdocContent.replace(/"/g, '&quot;')}"></iframe>`;
-            outputCode.value = iframeCode;
-            outputCode.select();
+            iframeOutput.value = iframeCode;
+            iframeOutput.select();
             
             try {
                 navigator.clipboard.writeText(iframeCode).then(() => {
-                   alert('Код сгенерирован и скопирован в буфер обмена!');
+                   const originalText = generateBtn.textContent;
+                   generateBtn.textContent = 'Скопировано!';
+                   setTimeout(() => { generateBtn.textContent = originalText; }, 2000);
                 });
             } catch (err) {
-                alert('Код сгенерирован! Пожалуйста, скопируйте его вручную.');
+                alert('Не удалось скопировать. Пожалуйста, скопируйте вручную.');
             }
         });
     </script>
