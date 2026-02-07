@@ -39,7 +39,11 @@
             border-radius: 16px;
             width: 100%;
             max-width: 1200px;
-            aspect-ratio: 16 / 9;
+            /* --- ИЗМЕНЕНИЕ --- */
+            /* Убрано aspect-ratio, задана высота, зависящая от экрана */
+            height: 90vh; 
+            max-height: 850px; /* Ограничение для очень больших экранов */
+            /* ------------------ */
             padding: 30px 40px;
             display: flex;
             flex-direction: column;
@@ -85,7 +89,7 @@
         .animation-options label:hover { border-color: var(--primary-color); color: var(--primary-color); }
         .animation-options input[type="radio"]:checked + label { background-color: var(--border-color); border-color: var(--primary-color); color: white; box-shadow: 0 0 10px rgba(228, 34, 156, 0.4); }
         select { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border-color); font-size: 16px; background-color: var(--bg-color); color: var(--text-color); }
-        #generate-btn { width: 100%; padding: 15px; font-size: 18px; font-weight: bold; color: white; background-color: var(--primary-color); border: none; border-radius: 8px; cursor: pointer; transition: all 0.3s ease; margin-top: 20px; }
+        #generate-btn { width: 100%; padding: 15px; font-size: 18px; font-weight: bold; color: white; background-color: var(--primary-color); border: none; border-radius: 8px; cursor: pointer; transition: all 0.3s ease; margin-top: auto; /* Прижимаем кнопку к низу */ }
         #generate-btn:disabled { background-color: #555; color: #888; cursor: not-allowed; box-shadow: none; }
         #generate-btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: var(--neon-glow); }
         textarea { width: 100%; height: 100px; padding: 10px; border: 1px solid var(--border-color); border-radius: 8px; font-family: 'Courier New', Courier, monospace; resize: vertical; box-sizing: border-box; background-color: var(--bg-color); color: var(--text-color); word-break: break-all; margin-top: 15px;}
@@ -101,26 +105,25 @@
             justify-content: center;
             align-items: center;
             color: var(--text-muted);
-            flex-shrink: 0;
+            margin-bottom: 20px; /* Добавлен отступ от кнопки */
         }
         #preview-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
         #preview-image { width: 100%; height: 100%; object-fit: cover; animation: none; transform: scale(1); }
         
-        /* --- НОВЫЕ СТИЛИ ДЛЯ РАСКРЫВАЮЩЕГОСЯ СПИСКА --- */
         .accordion-header {
-            font-size: 1.17em; /* Эквивалент h3 */
+            font-size: 1.17em;
             margin-bottom: 0;
             font-weight: 600;
             color: var(--primary-color);
             border-bottom: 1px solid var(--border-color);
             padding-bottom: 10px;
             cursor: pointer;
-            list-style: none; /* Убираем стандартный маркер */
+            list-style: none;
             position: relative;
             display: block;
         }
         .accordion-header::-webkit-details-marker {
-            display: none; /* Убираем стандартный маркер для Chrome/Safari */
+            display: none;
         }
         .accordion-header::after {
             content: '▼';
@@ -137,8 +140,8 @@
         .accordion .animation-options {
             margin-top: 15px;
         }
-        /* ------------------------------------------- */
 
+        /* Анимации не изменены */
         @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
         @keyframes pan-horizontal { from { transform: translateX(-10%); } to { transform: translateX(10%); } }
         @keyframes zoom-in { from { transform: scale(1); } to { transform: scale(1.2); } }
@@ -165,9 +168,8 @@
                     <h3>1. Загрузите фон</h3>
                     <input type="file" id="bg-upload" accept="image/*">
                 </div>
-                <!-- ИЗМЕНЕНИЕ В HTML: Раздел анимаций обернут в <details> -->
                 <div class="control-group">
-                    <details class="accordion">
+                    <details class="accordion" open> <!-- Добавлен атрибут open, чтобы список был открыт по умолчанию -->
                         <summary class="accordion-header">2. Эффекты анимации</summary>
                         <div class="animation-options" id="animation-options">
                             <input type="radio" id="anim-none" name="animation-type" value="none" checked><label for="anim-none">Без анимации</label>
@@ -217,7 +219,7 @@
     </div>
 
     <script>
-        // JS без изменений, так как он полностью совместим с новой структурой
+        // JS без изменений, все работает как и раньше
         const bgUpload = document.getElementById('bg-upload');
         const animationOptions = document.getElementById('animation-options');
         const animationSpeedSelect = document.getElementById('animation-speed');
