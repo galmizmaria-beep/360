@@ -4,11 +4,25 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Генератор анимированного фона для Genially</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
+        /* CSS Переменные для легкой смены темы */
+        :root {
+            --bg-color: #120c18;
+            --container-bg: #1a1423;
+            --primary-color: #e4229c;
+            --text-color: #f0f0f0;
+            --text-muted: #a9a9a9;
+            --border-color: rgba(228, 34, 156, 0.3);
+            --neon-glow: 0 0 5px var(--primary-color), 0 0 15px var(--primary-color), 0 0 25px var(--primary-color);
+        }
+
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            background-color: #f0f2f5;
-            color: #333;
+            font-family: 'Montserrat', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
             display: flex;
             justify-content: center;
             align-items: center;
@@ -18,48 +32,162 @@
             box-sizing: border-box;
         }
         .container {
-            background: white;
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 4px
- 12px rgba(0,0,0,0.1);
+            background: var(--container-bg);
+            padding: 30px 40px;
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 0 30px rgba(228, 34, 156, 0.1);
             width: 100%;
-            max-width: 900px;
+            max-width: 1000px;
         }
         h1 {
             text-align: center;
             margin-top: 0;
-            color: #1a237e;
+            color: var(--primary-color);
+            font-weight: 700;
+            text-shadow: 0 0 10px var(--primary-color);
         }
         .main-content {
             display: flex;
             flex-wrap: wrap;
-            gap: 30px;
-            margin-top: 20px;
+            gap: 40px;
+            margin-top: 30px;
         }
-        .controls {
+        .controls, .preview-wrapper {
             flex: 1;
-            min-width: 300px;
+            min-width: 320px;
         }
-        .preview-wrapper {
-            flex: 1;
-            min-width: 300px;
+        h3 {
+            display: block;
+            margin-bottom: 15px;
+            font-weight: 600;
+            color: var(--primary-color);
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 10px;
+        }
+        .control-group {
+            margin-bottom: 30px;
+        }
+        p {
+            color: var(--text-muted);
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        /* Стилизация загрузчика файлов */
+        input[type="file"] { color: transparent; }
+        input[type="file"]::-webkit-file-upload-button {
+            visibility: hidden;
+        }
+        input[type="file"]::before {
+            content: 'Выберите файл...';
+            display: inline-block;
+            background: transparent;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 10px 15px;
+            outline: none;
+            white-space: nowrap;
+            -webkit-user-select: none;
+            cursor: pointer;
+            color: var(--text-color);
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        input[type="file"]:hover::before {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+        input[type="file"]:active::before {
+            background: var(--border-color);
+        }
+
+        /* Стилизация радио-кнопок для выбора анимации */
+        .animation-options {
             display: flex;
             flex-direction: column;
-            align-items: center;
+            gap: 10px;
+        }
+        .animation-options label {
+            background-color: transparent;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 12px 15px;
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+            position: relative;
+        }
+        .animation-options input[type="radio"] {
+            display: none;
+        }
+        .animation-options label:hover {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+        .animation-options input[type="radio"]:checked + label {
+            background-color: var(--border-color);
+            border-color: var(--primary-color);
+            color: white;
+            box-shadow: 0 0 10px rgba(228, 34, 156, 0.4);
+        }
+
+        select {
+            width: 100%;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            font-size: 16px;
+            background-color: var(--container-bg);
+            color: var(--text-color);
+        }
+
+        #generate-btn {
+            width: 100%;
+            padding: 15px;
+            font-size: 18px;
+            font-weight: bold;
+            color: white;
+            background-color: var(--primary-color);
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        #generate-btn:disabled {
+            background-color: #555;
+            color: #888;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+        #generate-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: var(--neon-glow);
+        }
+
+        textarea {
+            width: 100%;
+            height: 120px;
+            padding: 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-family: 'Courier New', Courier, monospace;
+            resize: vertical;
+            box-sizing: border-box;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            word-break: break-all;
         }
         .preview-box {
             width: 100%;
-            padding-top: 56.25%; /* Соотношение сторон 16:9 */
+            padding-top: 56.25%; /* 16:9 */
             position: relative;
-            background-color: #e8eaf6;
-            border: 2px dashed #c5cae9;
-            border-radius: 8px;
+            background-color: #000;
+            border: 2px dashed var(--border-color);
+            border-radius: 12px;
             overflow: hidden;
             display: flex;
             justify-content: center;
             align-items: center;
-            color: #7986cb;
+            color: var(--text-muted);
         }
         .preview-box img {
             position: absolute;
@@ -68,92 +196,62 @@
             width: 100%;
             height: 100%;
             object-fit: cover;
+            /* Сброс анимации, будет применяться через JS */
+            animation: none; 
+            transform: scale(1); /* Сброс для анимаций с transform */
         }
-        .control-group {
-            margin-bottom: 25px;
-        }
-        label, h3 {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            color: #3f51b5;
-        }
-        input[type="file"] {
-            width: 100%;
-        }
-        select {
-            width: 100%;
-            padding: 10px;
-            border-radius: 6px;
-            border: 1px solid #ccc;
-            font-size: 16px;
-        }
-        button {
-            width: 100%;
-            padding: 12px;
-            font-size: 16px;
-            font-weight: bold;
-            color: white;
-            background-color: #4CAF50;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-        button:disabled {
-            background-color: #aaa;
-            cursor: not-allowed;
-        }
-        button:hover:not(:disabled) {
-            background-color: #45a049;
-        }
-        .output-area {
-            margin-top: 20px;
-        }
-        textarea {
-            width: 100%;
-            height: 100px;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 6px;
-            font-family: 'Courier New', Courier, monospace;
-            resize: vertical;
-            box-sizing: border-box;
-            word-break: break-all;
-        }
-        /* Анимация вращения для предпросмотра */
-        @keyframes rotate {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
+        
+        /* Определения анимаций для предпросмотра */
+        @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        @keyframes pan-horizontal { from { transform: translateX(-10%); } to { transform: translateX(10%); } }
+        @keyframes zoom-in { from { transform: scale(1); } to { transform: scale(1.2); } }
+        @keyframes zoom-out { from { transform: scale(1.1); } to { transform: scale(1); } }
+        @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+        @keyframes sway { 0%, 100% { transform: rotate(-2deg); } 50% { transform: rotate(2deg); } }
+        @keyframes flicker { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
+        @keyframes hue-rotate { from { filter: hue-rotate(0deg); } to { filter: hue-rotate(360deg); } }
+        @keyframes blur-focus { 0%, 100% { filter: blur(5px); } 50% { filter: blur(0); } }
+
     </style>
 </head>
 <body>
 
     <div class="container">
-        <h1>Генератор анимированного фона для Genially</h1>
+        <h1>Neon Background Generator</h1>
         <div class="main-content">
             <div class="controls">
                 <div class="control-group">
-                    <h3>1. Загрузите фон с компьютера</h3>
+                    <h3>1. Загрузите фон</h3>
                     <input type="file" id="bg-upload" accept="image/*">
                 </div>
                 <div class="control-group">
-                    <h3>2. Настройте вращение</h3>
-                    <p>Здесь мы не просто поворачиваем на 90, 180 или 360 градусов, а задаем скорость полного оборота. Это создает эффект постоянного вращения.</p>
-                    <label for="rotation-speed">Скорость полного оборота (в секундах)</label>
-                    <select id="rotation-speed">
-                        <option value="60">Очень медленно (60с)</option>
-                        <option value="30" selected>Медленно (30с)</option>
-                        <option value="15">Средне (15с)</option>
-                        <option value="8">Быстро (8с)</option>
-                        <option value="4">Очень быстро (4с)</option>
+                    <h3>2. Эффекты анимации</h3>
+                    <div class="animation-options" id="animation-options">
+                        <input type="radio" id="anim-rotate" name="animation-type" value="rotate" checked><label for="anim-rotate">Полный оборот</label>
+                        <input type="radio" id="anim-pan" name="animation-type" value="pan-horizontal"><label for="anim-pan">Панорама (влево-вправо)</label>
+                        <input type="radio" id="anim-zoom-in" name="animation-type" value="zoom-in"><label for="anim-zoom-in">Плавное приближение</label>
+                        <input type="radio" id="anim-zoom-out" name="animation-type" value="zoom-out"><label for="anim-zoom-out">Плавное отдаление</label>
+                        <input type="radio" id="anim-pulse" name="animation-type" value="pulse"><label for="anim-pulse">Пульсация</label>
+                        <input type="radio" id="anim-sway" name="animation-type" value="sway"><label for="anim-sway">Покачивание</label>
+                        <input type="radio" id="anim-flicker" name="animation-type" value="flicker"><label for="anim-flicker">Мерцание</label>
+                        <input type="radio" id="anim-hue" name="animation-type" value="hue-rotate"><label for="anim-hue">Смена оттенков</label>
+                        <input type="radio" id="anim-blur" name="animation-type" value="blur-focus"><label for="anim-blur">Фокус / Размытие</label>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <h3>3. Скорость анимации</h3>
+                    <select id="animation-speed">
+                        <option value="30">Очень медленно (30с)</option>
+                        <option value="20">Медленно (20с)</option>
+                        <option value="10" selected>Средне (10с)</option>
+                        <option value="5">Быстро (5с)</option>
+                        <option value="3">Очень быстро (3с)</option>
                     </select>
                 </div>
                  <button id="generate-btn" disabled>Сгенерировать код</button>
 
                  <div class="output-area">
-                     <h3>3. Скопируйте код для вставки</h3>
+                     <h3>4. Скопируйте код</h3>
                      <textarea id="output-code" readonly placeholder="Здесь появится код для вставки в Genially..."></textarea>
                  </div>
             </div>
@@ -169,7 +267,8 @@
 
     <script>
         const bgUpload = document.getElementById('bg-upload');
-        const rotationSpeedSelect = document.getElementById('rotation-speed');
+        const animationOptions = document.getElementById('animation-options');
+        const animationSpeedSelect = document.getElementById('animation-speed');
         const generateBtn = document.getElementById('generate-btn');
         const outputCode = document.getElementById('output-code');
         const previewImage = document.getElementById('preview-image');
@@ -177,14 +276,37 @@
 
         let imageDataUrl = '';
 
+        // Объект с CSS-кодом для каждой анимации
+        const animationsCss = {
+            'rotate': `@keyframes anim { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }`,
+            'pan-horizontal': `img { transform: scale(1.2); } @keyframes anim { from { transform: scale(1.2) translateX(-10%); } to { transform: scale(1.2) translateX(10%); } }`,
+            'zoom-in': `@keyframes anim { from { transform: scale(1); } to { transform: scale(1.2); } }`,
+            'zoom-out': `img { transform: scale(1.1); } @keyframes anim { from { transform: scale(1.1); } to { transform: scale(1); } }`,
+            'pulse': `@keyframes anim { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }`,
+            'sway': `@keyframes anim { 0%, 100% { transform: rotate(-2deg); } 50% { transform: rotate(2deg); } }`,
+            'flicker': `@keyframes anim { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }`,
+            'hue-rotate': `@keyframes anim { from { filter: hue-rotate(0deg); } to { filter: hue-rotate(360deg); } }`,
+            'blur-focus': `@keyframes anim { 0%, 100% { filter: blur(5px); } 50% { filter: blur(0); } }`
+        };
+
         function updatePreview() {
             if (imageDataUrl) {
                 previewImage.src = imageDataUrl;
                 previewImage.style.display = 'block';
-                previewBox.firstElementChild.style.display = 'none'; // Скрыть текст "Ваш фон..."
+                previewBox.firstElementChild.style.display = 'none';
                 
-                const speed = rotationSpeedSelect.value;
-                previewImage.style.animation = `rotate ${speed}s linear infinite`;
+                const animationType = document.querySelector('input[name="animation-type"]:checked').value;
+                const speed = animationSpeedSelect.value;
+
+                // Некоторые анимации требуют 'alternate' для плавного возврата
+                const direction = ['pan-horizontal', 'sway', 'pulse', 'flicker', 'blur-focus'].includes(animationType) ? 'alternate' : 'normal';
+
+                // Для pan и zoom-out нужно начальное увеличение, чтобы не было пустых краев
+                previewImage.style.transform = 'scale(1)'; // Сброс
+                if (animationType === 'pan-horizontal') previewImage.style.transform = 'scale(1.2)';
+                if (animationType === 'zoom-out') previewImage.style.transform = 'scale(1.1)';
+
+                previewImage.style.animation = `${animationType} ${speed}s linear infinite ${direction}`;
                 
                 generateBtn.disabled = false;
             } else {
@@ -200,13 +322,16 @@
                 const reader = new FileReader();
                 reader.onload = (e) => {
                     imageDataUrl = e.target.result;
+                    // Обновляем имя файла в кастомном инпуте
+                    document.querySelector('input[type="file"]::before').textContent = file.name;
                     updatePreview();
                 };
                 reader.readAsDataURL(file);
             }
         });
 
-        rotationSpeedSelect.addEventListener('change', updatePreview);
+        animationOptions.addEventListener('change', updatePreview);
+        animationSpeedSelect.addEventListener('change', updatePreview);
 
         generateBtn.addEventListener('click', () => {
             if (!imageDataUrl) {
@@ -214,21 +339,25 @@
                 return;
             }
 
-            const speed = rotationSpeedSelect.value;
+            const animationType = document.querySelector('input[name="animation-type"]:checked').value;
+            const speed = animationSpeedSelect.value;
+            const direction = ['pan-horizontal', 'sway', 'pulse', 'flicker', 'blur-focus'].includes(animationType) ? 'alternate' : 'normal';
+            
+            const animationKeyframes = animationsCss[animationType];
 
-            // Создаем HTML-содержимое для встраивания.
-            // Все стили и само изображение будут "зашиты" прямо сюда.
             const srcdocContent = `
                 <!DOCTYPE html>
                 <html>
                 <head>
                     <style>
-                        body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; }
-                        img { width: 100%; height: 100%; object-fit: cover; animation: rotate ${speed}s linear infinite; }
-                        @keyframes rotate {
-                            from { transform: rotate(0deg); }
-                            to { transform: rotate(360deg); }
+                        body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background-color: #000; }
+                        img { 
+                            width: 100%; 
+                            height: 100%; 
+                            object-fit: cover; 
+                            animation: anim ${speed}s linear infinite ${direction}; 
                         }
+                        ${animationKeyframes}
                     </style>
                 </head>
                 <body>
@@ -237,20 +366,17 @@
                 </html>
             `;
 
-            // Генерируем финальный iframe-код.
-            // Атрибут srcdoc позволяет встроить HTML-документ прямо в тег.
-            // Заменяем двойные кавычки на HTML-сущности для корректной работы.
             const iframeCode = `<iframe width="100%" height="100%" frameborder="0" srcdoc="${srcdocContent.replace(/"/g, '&quot;')}"></iframe>`;
 
             outputCode.value = iframeCode;
-            outputCode.select(); // Выделить текст для удобного копирования
+            outputCode.select();
             
-            // Пытаемся скопировать в буфер обмена
             try {
-                document.execCommand('copy');
-                alert('Код сгенерирован и скопирован в буфер обмена!');
+                navigator.clipboard.writeText(iframeCode).then(() => {
+                   alert('Код сгенерирован и скопирован в буфер обмена!');
+                });
             } catch (err) {
-                alert('Код сгенерирован! Пожалуйста, скопируйте его вручную из поля ниже.');
+                alert('Код сгенерирован! Пожалуйста, скопируйте его вручную.');
             }
         });
     </script>
