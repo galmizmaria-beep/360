@@ -77,7 +77,8 @@
         h4 { color: var(--text-muted); margin: 15px 0 10px; font-size: 1em; }
         input[type="file"] { color: transparent; width: 100%; }
         input[type="file"]::-webkit-file-upload-button { visibility: hidden; }
-        input[type="file"]::before { content: 'Выберите файл...'; width: 100%; box-sizing: border-box; display: inline-block; background: transparent; border: 1px solid var(--border-color); border-radius: 8px; padding: 10px 15px; outline: none; white-space: nowrap; cursor: pointer; color: var(--text-color); font-weight: 600; transition: all 0.3s ease; }
+        /* ИЗМЕНЕНИЕ ЗДЕСЬ: `content` теперь берется из атрибута data-label */
+        input[type="file"]::before { content: attr(data-label); width: 100%; box-sizing: border-box; display: inline-block; background: transparent; border: 1px solid var(--border-color); border-radius: 8px; padding: 10px 15px; outline: none; white-space: nowrap; cursor: pointer; color: var(--text-color); font-weight: 600; transition: all 0.3s ease; }
         input[type="file"]:hover::before { border-color: var(--primary-color); color: var(--primary-color); }
         input[type="file"].file-loaded::before {
             border-color: #28a745;
@@ -236,6 +237,9 @@
 
         let imageDataUrl = '';
 
+        // ИЗМЕНЕНИЕ ЗДЕСЬ: Устанавливаем начальный текст для кнопки загрузки
+        bgUpload.setAttribute('data-label', 'Выберите файл...');
+
         const simpleAnimationsKeyframes = { 
             'pan-horizontal':`img{transform:scale(1.2)}@keyframes anim{from{transform:scale(1.2) translateX(-10%)}to{transform:scale(1.2) translateX(10%)}}`,
             'pan-diagonal':`img{transform:scale(1.2)}@keyframes anim{from{transform:scale(1.2) translate(-5%, -5%)}to{transform:scale(1.2) translate(5%, 5%)}}`,
@@ -271,7 +275,6 @@
             'click-spotlight':(img, speed) => `<!DOCTYPE html><html><head><style>body,html{margin:0;padding:0;width:100%;height:100%;overflow:hidden;background:#000}.bg-img{width:100%;height:100%;object-fit:cover;clip-path:circle(0% at 50% 50%);transition:clip-path ${speed} ease-in-out}.bg-img.active{clip-path:circle(75% at var(--x) var(--y))}</style></head><body><img id="bg" class="bg-img" src="${img}"><script>const bg=document.getElementById('bg');document.body.addEventListener('click',e=>{bg.style.setProperty('--x',e.clientX+'px');bg.style.setProperty('--y',e.clientY+'px');bg.classList.add('active')})<\/script></body></html>`,
         };
         
-        // Helper to convert animation loop durations to snappier transition durations
         function getTransitionSpeed(speedValue) {
             const map = { '30s': '2s', '20s': '1.5s', '10s': '1s', '5s': '0.5s', '3s': '0.3s' };
             return map[speedValue] || '1s';
@@ -303,32 +306,32 @@
                 const direction = directionCandidates.includes(animationType) ? 'alternate' : 'normal';
                 previewSrcdoc = codeGenerators.simple(imageDataUrl, speed, simpleAnimationsKeyframes[animationType], direction);
             } else {
-                 // Fallback for the case where 'none' might be selected programmatically before user interaction
                 previewSrcdoc = `<!DOCTYPE html><html><head><style>body,html{margin:0;padding:0;width:100%;height:100%;overflow:hidden}img{width:100%;height:100%;object-fit:cover}</style></head><body><img src="${imageDataUrl}"></body></html>`;
             }
             
             previewIframe.srcdoc = previewSrcdoc;
         }
 
+        // ИЗМЕНЕНИЕ ЗДЕСЬ: Вся логика обновления текста кнопки исправлена
         bgUpload.addEventListener('change', (event) => {
             const file = event.target.files[0];
             if (file) {
                 const reader = new FileReader();
                 reader.onload = (e) => {
                     imageDataUrl = e.target.result;
-                    const fileButtonLabel = document.querySelector('input[type="file"]::before');
                     
-                    // Show success confirmation
+                    // Показываем подтверждение
                     bgUpload.classList.add('file-loaded');
-                    fileButtonLabel.textContent = 'Файл загружен! ✔';
+                    bgUpload.setAttribute('data-label', 'Файл загружен! ✔');
 
-                    // Revert to filename after a delay
+                    // Через 2.5 секунды возвращаем имя файла
                     setTimeout(() => {
                         bgUpload.classList.remove('file-loaded');
-                        fileButtonLabel.textContent = file.name.length > 25 ? file.name.substring(0, 22) + '...' : file.name;
+                        const fileName = file.name.length > 25 ? file.name.substring(0, 22) + '...' : file.name;
+                        bgUpload.setAttribute('data-label', fileName);
                     }, 2500);
                     
-                    // When a new image is uploaded, reset to the default animation and update preview
+                    // Сбрасываем анимацию на дефолтную и обновляем предпросмотр
                     document.getElementById('click-radial-reveal').checked = true;
                     updatePreview();
                 };
@@ -338,8 +341,6 @@
 
         [animationOptionsLoop, animationOptionsClick, animationSpeedSelect].forEach(el => {
             el.addEventListener('change', () => {
-                // The shared 'name' attribute on radio buttons handles ensuring only one is selected.
-                // We just need to trigger the preview update.
                 updatePreview();
             });
         });
@@ -386,4 +387,3 @@
     </script>
 </body>
 </html>
-           
