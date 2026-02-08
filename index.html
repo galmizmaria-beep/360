@@ -77,7 +77,6 @@
         h4 { color: var(--text-muted); margin: 15px 0 10px; font-size: 1em; }
         input[type="file"] { color: transparent; width: 100%; }
         input[type="file"]::-webkit-file-upload-button { visibility: hidden; }
-        /* ИЗМЕНЕНИЕ ЗДЕСЬ: `content` теперь берется из атрибута data-label */
         input[type="file"]::before { content: attr(data-label); width: 100%; box-sizing: border-box; display: inline-block; background: transparent; border: 1px solid var(--border-color); border-radius: 8px; padding: 10px 15px; outline: none; white-space: nowrap; cursor: pointer; color: var(--text-color); font-weight: 600; transition: all 0.3s ease; }
         input[type="file"]:hover::before { border-color: var(--primary-color); color: var(--primary-color); }
         input[type="file"].file-loaded::before {
@@ -237,7 +236,6 @@
 
         let imageDataUrl = '';
 
-        // ИЗМЕНЕНИЕ ЗДЕСЬ: Устанавливаем начальный текст для кнопки загрузки
         bgUpload.setAttribute('data-label', 'Выберите файл...');
 
         const simpleAnimationsKeyframes = { 
@@ -312,7 +310,6 @@
             previewIframe.srcdoc = previewSrcdoc;
         }
 
-        // ИЗМЕНЕНИЕ ЗДЕСЬ: Вся логика обновления текста кнопки исправлена
         bgUpload.addEventListener('change', (event) => {
             const file = event.target.files[0];
             if (file) {
@@ -320,18 +317,15 @@
                 reader.onload = (e) => {
                     imageDataUrl = e.target.result;
                     
-                    // Показываем подтверждение
                     bgUpload.classList.add('file-loaded');
                     bgUpload.setAttribute('data-label', 'Файл загружен! ✔');
 
-                    // Через 2.5 секунды возвращаем имя файла
                     setTimeout(() => {
                         bgUpload.classList.remove('file-loaded');
                         const fileName = file.name.length > 25 ? file.name.substring(0, 22) + '...' : file.name;
                         bgUpload.setAttribute('data-label', fileName);
                     }, 2500);
                     
-                    // Сбрасываем анимацию на дефолтную и обновляем предпросмотр
                     document.getElementById('click-radial-reveal').checked = true;
                     updatePreview();
                 };
@@ -365,8 +359,12 @@
 
             const iframeCode = `<iframe width="100%" height="100%" frameborder="0" srcdoc="${srcdocContent.replace(/"/g, '&quot;')}"></iframe>`;
             iframeOutput.value = iframeCode;
-            iframeOutput.select();
-            iframeOutput.setSelectionRange(0, 99999);
+            
+            // --- ИСПРАВЛЕНИЕ ЗДЕСЬ ---
+            // Сначала фокусируемся на элементе, потом выделяем весь текст, используя его реальную длину.
+            // Это самый надежный способ.
+            iframeOutput.focus();
+            iframeOutput.setSelectionRange(0, iframeOutput.value.length);
             
             try {
                 navigator.clipboard.writeText(iframeCode).then(() => {
